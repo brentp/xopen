@@ -53,13 +53,14 @@ type Reader struct {
 }
 
 // Close the associated files.
-func (r *Reader) Close() {
+func (r *Reader) Close() error {
 	if r.gz != nil {
 		r.gz.Close()
 	}
 	if c, ok := r.rdr.(io.ReadCloser); ok {
 		c.Close()
 	}
+	return nil
 }
 
 // Writer is returned by Wopen
@@ -70,12 +71,13 @@ type Writer struct {
 }
 
 // Close the associated files.
-func (w *Writer) Close() {
+func (w *Writer) Close() error {
 	w.Flush()
 	if w.gz != nil {
 		w.gz.Close()
 	}
 	w.wtr.Close()
+	return nil
 }
 
 // Flush the writer.
