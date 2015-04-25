@@ -18,7 +18,7 @@ rdr, err := xopen.Ropen("some.gz")
 rdr, err := xopen.Ropen("some.txt")
 // stdin (possible gzipped)
 rdr, err := xopen.Ropen("-")
-``
+```
 Get a buffered writer with `xopen.Wopen`.
 
 
