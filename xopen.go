@@ -9,8 +9,10 @@ import (
 	"bufio"
 	"compress/gzip"
 	"errors"
+	"fmt"
 	"io"
 	"log"
+	"net/http"
 	"os"
 	"strings"
 )
@@ -108,14 +110,27 @@ func Buf(r io.Reader) *Reader {
 
 // Ropen opens a buffered reader.
 func Ropen(f string) (*Reader, error) {
+	var err error
+	var rdr io.Reader
 	if f == "-" {
 		if !IsStdin() {
 			return nil, errors.New("warning: stdin not detected")
 		}
 		b := Buf(os.Stdin)
 		return b, nil
+	} else if strings.HasPrefix(f, "http://") || strings.HasPrefix(f, "https://") {
+		var rsp *http.Response
+		rsp, err = http.Get(f)
+		if err != nil {
+			return nil, err
+		}
+		if rsp.StatusCode != 200 {
+			return nil, fmt.Errorf("http error downloading %s. status: %s", f, rsp.Status)
+		}
+		rdr = rsp.Body
+	} else {
+		rdr, err = os.Open(f)
 	}
-	rdr, err := os.Open(f)
 	if err != nil {
 		return nil, err
 	}

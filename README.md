@@ -18,6 +18,9 @@ rdr, err := xopen.Ropen("some.gz")
 rdr, err := xopen.Ropen("some.txt")
 // stdin (possible gzipped)
 rdr, err := xopen.Ropen("-")
+// https://
+rdr, err := xopen.Ropen("http://example.com/some-file.txt")
+
 ```
 Get a buffered writer with `xopen.Wopen`.
 

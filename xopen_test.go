@@ -74,3 +74,26 @@ func (s *XopenTest) TestWopen(c *C) {
 	rdr.Close()
 	os.Remove("t.gz")
 }
+
+var httpTests = []struct {
+	url         string
+	expectError bool
+}{
+	{"https://raw.githubusercontent.com/brentp/xopen/master/README.md", false},
+	{"http://raw.githubusercontent.com/brentp/xopen/master/README.md", false},
+	{"http://raw.githubusercontent.com/brentp/xopen/master/BAD.md", true},
+}
+
+func (s *XopenTest) TestReadHttp(c *C) {
+	for _, t := range httpTests {
+		rdr, err := Ropen(t.url)
+		if !t.expectError {
+			c.Assert(err, IsNil)
+			v, err := rdr.ReadString(byte('\n'))
+			c.Assert(err, IsNil)
+			c.Assert(len(v), Not(Equals), 0)
+		} else {
+			c.Assert(err, ErrorMatches, ".* 404 Not Found")
+		}
+	}
+}
