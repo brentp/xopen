@@ -14,9 +14,9 @@ import (
 
 func Test(t *testing.T) { TestingT(t) }
 
-type SniffTest struct{}
+type XopenTest struct{}
 
-var _ = Suite(&SniffTest{})
+var _ = Suite(&XopenTest{})
 
 func gzFromString(s string) string {
 	var c bytes.Buffer
@@ -33,7 +33,7 @@ var gzTests = []struct {
 	{true, gzFromString("asdf")},
 }
 
-func (s *SniffTest) TestIsGzip(c *C) {
+func (s *XopenTest) TestIsGzip(c *C) {
 	for _, t := range gzTests {
 		isGz, err := IsGzip(bufio.NewReader(strings.NewReader(t.data)))
 		c.Assert(err, IsNil)
@@ -41,18 +41,18 @@ func (s *SniffTest) TestIsGzip(c *C) {
 	}
 }
 
-func (s *SniffTest) TestIsStdin(c *C) {
+func (s *XopenTest) TestIsStdin(c *C) {
 	r := IsStdin()
 	c.Assert(r, Equals, false)
 }
 
-func (s *SniffTest) TestRopen(c *C) {
+func (s *XopenTest) TestRopen(c *C) {
 	rdr, err := Ropen("-")
 	c.Assert(err, ErrorMatches, ".* stdin not detected")
 	c.Assert(rdr, IsNil)
 }
 
-func (s *SniffTest) TestWopen(c *C) {
+func (s *XopenTest) TestWopen(c *C) {
 	testString := "ASDF1234"
 	wtr, err := Wopen("t.gz")
 	c.Assert(err, IsNil)
