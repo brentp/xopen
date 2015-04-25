@@ -10,6 +10,18 @@ file for writing. Both will use gzip when appropriate and will user buffered IO.
 
 ## Usage
 
+Here's how to get a buffered reader:
+```go
+// gzipped
+rdr, err := xopen.Ropen("some.gz")
+// normal
+rdr, err := xopen.Ropen("some.txt")
+// stdin (possible gzipped)
+rdr, err := xopen.Ropen("-")
+``
+Get a buffered writer with `xopen.Wopen`.
+
+
 #### func  CheckBytes
 
 ```go
