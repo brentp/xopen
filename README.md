@@ -1,4 +1,5 @@
 [![GoDoc] (https://godoc.org/github.com/brentp/xopen?status.png)](https://godoc.org/github.com/brentp/xopen)
+[![Build Status](https://travis-ci.org/brentp/xopen.svg)](https://travis-ci.org/brentp/xopen)
 
 # xopen
 --
