@@ -14,6 +14,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"os/exec"
 	"strings"
 )
 
@@ -96,7 +97,7 @@ func (w *Writer) Flush() {
 func Buf(r io.Reader) *Reader {
 	b := bufio.NewReader(r)
 	var rdr *gzip.Reader
-	if is, err := IsGzip(b); err != nil {
+	if is, err := IsGzip(b); err != nil && err != io.EOF {
 		log.Fatal(err)
 	} else if is {
 		rdr, err = gzip.NewReader(b)
@@ -128,6 +129,23 @@ func Ropen(f string) (*Reader, error) {
 			return nil, fmt.Errorf("http error downloading %s. status: %s", f, rsp.Status)
 		}
 		rdr = rsp.Body
+	} else if f[0] == '|' {
+		// TODO: use csv to handle quoted file names.
+		cmdStrs := strings.Split(f[1:], " ")
+		var cmd *exec.Cmd
+		if len(cmdStrs) == 2 {
+			cmd = exec.Command(cmdStrs[0], cmdStrs[1:]...)
+		} else {
+			cmd = exec.Command(cmdStrs[0])
+		}
+		rdr, err = cmd.StdoutPipe()
+		if err != nil {
+			return nil, err
+		}
+		err = cmd.Start()
+		if err != nil {
+			return nil, err
+		}
 	} else {
 		rdr, err = os.Open(f)
 	}

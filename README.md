@@ -21,6 +21,8 @@ rdr, err := xopen.Ropen("some.txt")
 rdr, err := xopen.Ropen("-")
 // https://
 rdr, err := xopen.Ropen("http://example.com/some-file.txt")
+// subprocess
+rdr, err := xopen.Ropen("|ls -lh somefile.gz")
 
 ```
 Get a buffered writer with `xopen.Wopen`.

@@ -97,3 +97,23 @@ func (s *XopenTest) TestReadHttp(c *C) {
 		}
 	}
 }
+
+func (s *XopenTest) TestReadProcess(c *C) {
+	for _, cmd := range []string{"|ls -lh", "|ls", "|ls -lh xopen_test.go"} {
+		rdr, err := Ropen(cmd)
+		c.Assert(err, IsNil)
+		b := make([]byte, 1000)
+		_, err = rdr.Read(b)
+		if err != io.EOF {
+			c.Assert(err, IsNil)
+		}
+		lines := strings.Split(string(b), "\n")
+		has := false
+		for _, line := range lines {
+			if strings.Contains(line, "xopen_test.go") {
+				has = true
+			}
+		}
+		c.Assert(has, Equals, true)
+	}
+}
