@@ -53,26 +53,28 @@ func (s *XopenTest) TestRopen(c *C) {
 }
 
 func (s *XopenTest) TestWopen(c *C) {
-	testString := "ASDF1234"
-	wtr, err := Wopen("t.gz")
-	c.Assert(err, IsNil)
-	_, err = os.Stat("t.gz")
-	c.Assert(err, IsNil)
-	c.Assert(wtr.wtr, NotNil)
-	fmt.Fprintf(wtr, testString)
-	wtr.Close()
+	for _, f := range []string{"t.gz", "t"} {
+		testString := "ASDF1234"
+		wtr, err := Wopen(f)
+		c.Assert(err, IsNil)
+		_, err = os.Stat(f)
+		c.Assert(err, IsNil)
+		c.Assert(wtr.wtr, NotNil)
+		fmt.Fprintf(wtr, testString)
+		wtr.Close()
 
-	rdr, err := Ropen("t.gz")
-	c.Assert(err, IsNil)
+		rdr, err := Ropen(f)
+		c.Assert(err, IsNil)
 
-	str, err := rdr.ReadString(99)
-	c.Assert(str, Equals, testString)
-	c.Assert(err, Equals, io.EOF)
-	str, err = rdr.ReadString(99)
-	c.Assert(str, Equals, "")
+		str, err := rdr.ReadString(99)
+		c.Assert(str, Equals, testString)
+		c.Assert(err, Equals, io.EOF)
+		str, err = rdr.ReadString(99)
+		c.Assert(str, Equals, "")
 
-	rdr.Close()
-	os.Remove("t.gz")
+		rdr.Close()
+		os.Remove(f)
+	}
 }
 
 var httpTests = []struct {
