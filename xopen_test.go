@@ -5,11 +5,12 @@ import (
 	"bytes"
 	"compress/gzip"
 	"fmt"
-	. "gopkg.in/check.v1"
 	"io"
 	"os"
 	"strings"
 	"testing"
+
+	. "gopkg.in/check.v1"
 )
 
 func Test(t *testing.T) { TestingT(t) }
@@ -118,4 +119,22 @@ func (s *XopenTest) TestReadProcess(c *C) {
 		}
 		c.Assert(has, Equals, true)
 	}
+}
+
+func (s *XopenTest) TestOpenStdout(c *C) {
+	w, err := Wopen("-")
+	c.Assert(err, IsNil)
+	c.Assert(w.wtr, Equals, os.Stdout)
+}
+
+func (s *XopenTest) TestOpenBadFile(c *C) {
+	r, err := Ropen("XXXXXXXXXXXXXXXXXXXXXXX")
+	c.Assert(r, IsNil)
+	c.Assert(err, ErrorMatches, ".* no such file .*")
+}
+
+func (s *XopenTest) TestWOpenBadFile(c *C) {
+	w, err := Wopen("XX/XXX/XXX/XXX/XXX/XXXXXXXXX")
+	c.Assert(w, IsNil)
+	c.Assert(err, ErrorMatches, ".* no such file .*")
 }
