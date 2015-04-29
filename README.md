@@ -17,11 +17,11 @@ Here's how to get a buffered reader:
 rdr, err := xopen.Ropen("some.gz")
 // normal
 rdr, err := xopen.Ropen("some.txt")
-// stdin (possible gzipped)
+// stdin (possibly gzipped)
 rdr, err := xopen.Ropen("-")
 // https://
 rdr, err := xopen.Ropen("http://example.com/some-file.txt")
-// subprocess
+// Cmd
 rdr, err := xopen.Ropen("|ls -lh somefile.gz")
 
 ```
@@ -48,6 +48,13 @@ IsGzip returns true buffered Reader has the gzip magic.
 func IsStdin() bool
 ```
 IsStdin checks if we are getting data from stdin.
+
+#### func  XReader
+
+```go
+func XReader(f string) (io.Reader, error)
+```
+HttpReader returns a reader from a url string
 
 #### type Reader
 
@@ -77,7 +84,7 @@ Ropen opens a buffered reader.
 #### func (*Reader) Close
 
 ```go
-func (r *Reader) Close()
+func (r *Reader) Close() error
 ```
 Close the associated files.
 
@@ -102,7 +109,7 @@ endswith ".gz", then the output will be gzipped.
 #### func (*Writer) Close
 
 ```go
-func (w *Writer) Close()
+func (w *Writer) Close() error
 ```
 Close the associated files.
 
