@@ -109,6 +109,23 @@ func Buf(r io.Reader) *Reader {
 	return &Reader{b, r, rdr}
 }
 
+// HttpReader returns a reader from a url string
+func XReader(f string) (io.Reader, error) {
+	if strings.HasPrefix(f, "http://") || strings.HasPrefix(f, "https://") {
+		var rsp *http.Response
+		rsp, err := http.Get(f)
+		if err != nil {
+			return nil, err
+		}
+		if rsp.StatusCode != 200 {
+			return nil, fmt.Errorf("http error downloading %s. status: %s", f, rsp.Status)
+		}
+		rdr := rsp.Body
+		return rdr, nil
+	}
+	return os.Open(f)
+}
+
 // Ropen opens a buffered reader.
 func Ropen(f string) (*Reader, error) {
 	var err error
@@ -119,16 +136,6 @@ func Ropen(f string) (*Reader, error) {
 		}
 		b := Buf(os.Stdin)
 		return b, nil
-	} else if strings.HasPrefix(f, "http://") || strings.HasPrefix(f, "https://") {
-		var rsp *http.Response
-		rsp, err = http.Get(f)
-		if err != nil {
-			return nil, err
-		}
-		if rsp.StatusCode != 200 {
-			return nil, fmt.Errorf("http error downloading %s. status: %s", f, rsp.Status)
-		}
-		rdr = rsp.Body
 	} else if f[0] == '|' {
 		// TODO: use csv to handle quoted file names.
 		cmdStrs := strings.Split(f[1:], " ")
@@ -147,7 +154,7 @@ func Ropen(f string) (*Reader, error) {
 			return nil, err
 		}
 	} else {
-		rdr, err = os.Open(f)
+		rdr, err = XReader(f)
 	}
 	if err != nil {
 		return nil, err
