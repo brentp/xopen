@@ -91,11 +91,20 @@ func (w *Writer) Flush() {
 	}
 }
 
+// use large buffer size. heuristic multiple of os size.
+func getSize() int {
+	size := os.Getpagesize()
+	if size < 65536 {
+		return size * 16
+	}
+	return size
+}
+
 // Return a buffered reader from an io.Reader
 // If f == "-", then it will attempt to read from os.Stdin.
 // If the file is gzipped, it will be read as such.
 func Buf(r io.Reader) *Reader {
-	b := bufio.NewReader(r)
+	b := bufio.NewReaderSize(r, getSize())
 	var rdr *gzip.Reader
 	if is, err := IsGzip(b); err != nil && err != io.EOF {
 		log.Fatal(err)
@@ -104,7 +113,7 @@ func Buf(r io.Reader) *Reader {
 		if err != nil {
 			log.Fatal(err)
 		}
-		b = bufio.NewReader(rdr)
+		b = bufio.NewReaderSize(rdr, getSize())
 	}
 	return &Reader{b, r, rdr}
 }
@@ -177,9 +186,10 @@ func Wopen(f string) (*Writer, error) {
 			return nil, err
 		}
 	}
+	size := getSize()
 	if !strings.HasSuffix(f, ".gz") {
-		return &Writer{bufio.NewWriter(wtr), wtr, nil}, nil
+		return &Writer{bufio.NewWriterSize(wtr, size), wtr, nil}, nil
 	}
 	gz := gzip.NewWriter(wtr)
-	return &Writer{bufio.NewWriter(gz), wtr, gz}, nil
+	return &Writer{bufio.NewWriterSize(gz, size), wtr, gz}, nil
 }
