@@ -118,7 +118,7 @@ func Buf(r io.Reader) *Reader {
 	return &Reader{b, r, rdr}
 }
 
-// HttpReader returns a reader from a url string
+// XReader returns a reader from a url string or a file.
 func XReader(f string) (io.Reader, error) {
 	if strings.HasPrefix(f, "http://") || strings.HasPrefix(f, "https://") {
 		var rsp *http.Response

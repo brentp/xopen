@@ -55,7 +55,8 @@ IsStdin checks if we are getting data from stdin.
 ```go
 func XReader(f string) (io.Reader, error)
 ```
-HttpReader returns a reader from a url string
+// XReader returns a reader from a url string or a file.
+
 
 #### type Reader
 
