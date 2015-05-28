@@ -1,7 +1,6 @@
-// xopen makes it easy to get buffered (possibly gzipped) readers and writers.
-// and close all of the associated files.
-// Ropen opens a file for reading.
-// Wopen opens a file for writing.
+// xopen makes it easy to get buffered readers and writers.
+// Ropen opens a (possibly gzipped) file/process/http site for buffered reading.
+// Wopen opens a (possibly gzipped) file for buffered writing.
 // Both will use gzip when appropriate and will user buffered IO.
 package xopen
 

@@ -8,7 +8,7 @@
 
 xopen makes it easy to get buffered (possibly gzipped) readers and writers. and
 close all of the associated files. Ropen opens a file for reading. Wopen opens a
-file for writing. Both will use gzip when appropriate and will user buffered IO.
+file for writing. Both will use gzip when appropriate and will use buffered IO.
 
 ## Usage
 
