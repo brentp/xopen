@@ -138,3 +138,8 @@ func (s *XopenTest) TestWOpenBadFile(c *C) {
 	c.Assert(w, IsNil)
 	c.Assert(err, ErrorMatches, ".* no such file .*")
 }
+
+func (s *XopenTest) TestExists(c *C) {
+	c.Assert(Exists("xopen.go"), Equals, true)
+	c.Assert(Exists("____xx"), Equals, false)
+}

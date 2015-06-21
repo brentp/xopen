@@ -32,6 +32,12 @@ func IsStdin() bool {
 	return (stat.Mode() & os.ModeCharDevice) == 0
 }
 
+// Exists checks if a local file exits
+func Exists(path string) bool {
+	_, err := os.Stat(path)
+	return err == nil
+}
+
 // CheckBytes peeks at a buffered stream and checks if the first read bytes match.
 func CheckBytes(b *bufio.Reader, buf []byte) (bool, error) {
 
