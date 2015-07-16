@@ -14,6 +14,7 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
+	"os/user"
 	"strings"
 )
 
@@ -32,8 +33,33 @@ func IsStdin() bool {
 	return (stat.Mode() & os.ModeCharDevice) == 0
 }
 
+// Expand ~/path and ~otheruser/path appropriately
+func ExpandUser(path string) (string, error) {
+	if path[0] != '~' {
+		return path, nil
+	}
+	var u *user.User
+	var err error
+	if len(path) == 1 || path[1] == '/' {
+		u, err = user.Current()
+	} else {
+		name := strings.Split(path[1:], "/")[0]
+		u, err = user.Lookup(name)
+	}
+	if err != nil {
+		return "", err
+	}
+	home := u.HomeDir
+	path = home + "/" + path[1:]
+	return path, nil
+}
+
 // Exists checks if a local file exits
 func Exists(path string) bool {
+	path, perr := ExpandUser(path)
+	if perr != nil {
+		return false
+	}
 	_, err := os.Stat(path)
 	return err == nil
 }
@@ -136,6 +162,10 @@ func XReader(f string) (io.Reader, error) {
 		}
 		rdr := rsp.Body
 		return rdr, nil
+	}
+	f, err := ExpandUser(f)
+	if err != nil {
+		return nil, err
 	}
 	return os.Open(f)
 }

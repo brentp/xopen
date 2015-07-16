@@ -24,6 +24,8 @@ rdr, err := xopen.Ropen("-")
 rdr, err := xopen.Ropen("http://example.com/some-file.txt")
 // Cmd
 rdr, err := xopen.Ropen("|ls -lh somefile.gz")
+// User directory:
+rdr, err := xopen.Ropen("~/brentp/somefile")
 
 ```
 Get a buffered writer with `xopen.Wopen`.

@@ -143,3 +143,12 @@ func (s *XopenTest) TestExists(c *C) {
 	c.Assert(Exists("xopen.go"), Equals, true)
 	c.Assert(Exists("____xx"), Equals, false)
 }
+
+func (s *XopenTest) TestUser(c *C) {
+	c.Assert(Exists("~"), Equals, true)
+}
+
+func (s *XopenTest) TestExpand(c *C) {
+	_, err := ExpandUser("~baduser66")
+	c.Assert(err, Not(IsNil))
+}
