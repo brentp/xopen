@@ -6,7 +6,6 @@ package xopen
 
 import (
 	"bufio"
-	"compress/gzip"
 	"errors"
 	"fmt"
 	"io"
@@ -16,6 +15,8 @@ import (
 	"os/exec"
 	"os/user"
 	"strings"
+
+	"github.com/klauspost/compress/gzip"
 )
 
 // IsGzip returns true buffered Reader has the gzip magic.
