@@ -16,7 +16,10 @@ import (
 	"os/user"
 	"strings"
 
-	"github.com/klauspost/compress/gzip"
+	//gzip "github.com/klauspost/pgzip"
+	//"github.com/klauspost/compress/gzip"
+
+	"compress/gzip"
 )
 
 // IsGzip returns true buffered Reader has the gzip magic.
@@ -84,7 +87,7 @@ func CheckBytes(b *bufio.Reader, buf []byte) (bool, error) {
 type Reader struct {
 	*bufio.Reader
 	rdr io.Reader
-	gz  *gzip.Reader
+	gz  io.ReadCloser
 }
 
 // Close the associated files.
@@ -123,29 +126,23 @@ func (w *Writer) Flush() {
 	}
 }
 
-// use large buffer size. heuristic multiple of os size.
-func getSize() int {
-	size := os.Getpagesize()
-	if size < 65536 {
-		return size * 16
-	}
-	return size
-}
+var SIZE int = os.Getpagesize() * 2
 
 // Return a buffered reader from an io.Reader
 // If f == "-", then it will attempt to read from os.Stdin.
 // If the file is gzipped, it will be read as such.
 func Buf(r io.Reader) *Reader {
-	b := bufio.NewReaderSize(r, getSize())
-	var rdr *gzip.Reader
+	b := bufio.NewReaderSize(r, SIZE)
+	var rdr io.ReadCloser
 	if is, err := IsGzip(b); err != nil && err != io.EOF {
 		log.Fatal(err)
 	} else if is {
+		//rdr, err = newFastGzReader(b)
 		rdr, err = gzip.NewReader(b)
 		if err != nil {
 			log.Fatal(err)
 		}
-		b = bufio.NewReaderSize(rdr, getSize())
+		b = bufio.NewReaderSize(rdr, SIZE)
 	}
 	return &Reader{b, r, rdr}
 }
@@ -222,10 +219,9 @@ func Wopen(f string) (*Writer, error) {
 			return nil, err
 		}
 	}
-	size := getSize()
 	if !strings.HasSuffix(f, ".gz") {
-		return &Writer{bufio.NewWriterSize(wtr, size), wtr, nil}, nil
+		return &Writer{bufio.NewWriterSize(wtr, SIZE), wtr, nil}, nil
 	}
 	gz := gzip.NewWriter(wtr)
-	return &Writer{bufio.NewWriterSize(gz, size), wtr, gz}, nil
+	return &Writer{bufio.NewWriterSize(gz, SIZE), wtr, gz}, nil
 }
