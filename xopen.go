@@ -1,4 +1,4 @@
-// xopen makes it easy to get buffered readers and writers.
+// Package xopen makes it easy to get buffered readers and writers.
 // Ropen opens a (possibly gzipped) file/process/http site for buffered reading.
 // Wopen opens a (possibly gzipped) file for buffered writing.
 // Both will use gzip when appropriate and will user buffered IO.
@@ -37,7 +37,7 @@ func IsStdin() bool {
 	return (stat.Mode() & os.ModeCharDevice) == 0
 }
 
-// Expand ~/path and ~otheruser/path appropriately
+// ExpandUser expands ~/path and ~otheruser/path appropriately
 func ExpandUser(path string) (string, error) {
 	if path[0] != '~' {
 		return path, nil
@@ -126,23 +126,23 @@ func (w *Writer) Flush() {
 	}
 }
 
-var SIZE int = os.Getpagesize() * 2
+var pageSize = os.Getpagesize() * 2
 
-// Return a buffered reader from an io.Reader
+// Buf returns a buffered reader from an io.Reader
 // If f == "-", then it will attempt to read from os.Stdin.
 // If the file is gzipped, it will be read as such.
 func Buf(r io.Reader) *Reader {
-	b := bufio.NewReaderSize(r, SIZE)
+	b := bufio.NewReaderSize(r, pageSize)
 	var rdr io.ReadCloser
 	if is, err := IsGzip(b); err != nil && err != io.EOF {
 		log.Fatal(err)
 	} else if is {
-		//rdr, err = newFastGzReader(b)
-		rdr, err = gzip.NewReader(b)
+		rdr, err = newFastGzReader(b)
+		//rdr, err = gzip.NewReader(b)
 		if err != nil {
 			log.Fatal(err)
 		}
-		b = bufio.NewReaderSize(rdr, SIZE)
+		b = bufio.NewReaderSize(rdr, pageSize)
 	}
 	return &Reader{b, r, rdr}
 }
@@ -220,8 +220,8 @@ func Wopen(f string) (*Writer, error) {
 		}
 	}
 	if !strings.HasSuffix(f, ".gz") {
-		return &Writer{bufio.NewWriterSize(wtr, SIZE), wtr, nil}, nil
+		return &Writer{bufio.NewWriterSize(wtr, pageSize), wtr, nil}, nil
 	}
 	gz := gzip.NewWriter(wtr)
-	return &Writer{bufio.NewWriterSize(gz, SIZE), wtr, gz}, nil
+	return &Writer{bufio.NewWriterSize(gz, pageSize), wtr, gz}, nil
 }
