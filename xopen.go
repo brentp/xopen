@@ -137,8 +137,8 @@ func Buf(r io.Reader) *Reader {
 	if is, err := IsGzip(b); err != nil && err != io.EOF {
 		log.Fatal(err)
 	} else if is {
-		rdr, err = newFastGzReader(b)
-		//rdr, err = gzip.NewReader(b)
+		//rdr, err = newFastGzReader(b)
+		rdr, err = gzip.NewReader(b)
 		if err != nil {
 			log.Fatal(err)
 		}
