@@ -9,6 +9,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -106,6 +107,11 @@ type Writer struct {
 	*bufio.Writer
 	wtr *os.File
 	gz  *gzip.Writer
+}
+
+// Name returns the path to the underlying file.
+func (w *Writer) Name() string {
+	return w.wtr.Name()
 }
 
 // Close the associated files.
@@ -208,11 +214,18 @@ func Ropen(f string) (*Reader, error) {
 // Wopen opens a buffered reader.
 // If f == "-", then stdout will be used.
 // If f endswith ".gz", then the output will be gzipped.
+// If f startswith "tmp:" then a tmpfile will be created with the prefix being the value after tmp:
 func Wopen(f string) (*Writer, error) {
 	var wtr *os.File
 	var err error
 	if f == "-" {
 		wtr = os.Stdout
+	} else if strings.HasPrefix(f, "tmp:") {
+		prefix := ""
+		if len(f) > 4 {
+			prefix = strings.TrimSuffix(strings.Split(f, ":")[1], ".gz")
+		}
+		wtr, err = ioutil.TempFile("", prefix)
 	} else {
 		wtr, err = os.Create(f)
 		if err != nil {
@@ -223,5 +236,6 @@ func Wopen(f string) (*Writer, error) {
 		return &Writer{bufio.NewWriterSize(wtr, pageSize), wtr, nil}, nil
 	}
 	gz := gzip.NewWriter(wtr)
-	return &Writer{bufio.NewWriterSize(gz, pageSize), wtr, gz}, nil
+	w, err := &Writer{bufio.NewWriterSize(gz, pageSize), wtr, gz}, nil
+	return w, err
 }

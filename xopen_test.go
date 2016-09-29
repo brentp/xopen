@@ -78,6 +78,19 @@ func (s *XopenTest) TestWopen(c *C) {
 	}
 }
 
+func (s *XopenTest) TestWopenTmp(c *C) {
+	wtr, err := Wopen("tmp:x.gz")
+	c.Assert(err, IsNil)
+	c.Assert(wtr.wtr, NotNil)
+	fmt.Fprintf(wtr, "xx")
+	c.Assert(wtr.Close(), IsNil)
+	_, err = os.Stat(wtr.Name())
+	c.Assert(err, IsNil)
+
+	os.Remove(wtr.Name())
+
+}
+
 var httpTests = []struct {
 	url         string
 	expectError bool

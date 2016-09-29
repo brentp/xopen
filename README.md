@@ -29,6 +29,7 @@ rdr, err := xopen.Ropen("~/brentp/somefile")
 
 ```
 Get a buffered writer with `xopen.Wopen`.
+Get a temp file with `xopen.Wopen("tmp:prefix")`
 
 
 #### func  CheckBytes
@@ -109,6 +110,15 @@ func Wopen(f string) (*Writer, error)
 ```
 Wopen opens a buffered reader. If f == "-", then stdout will be used. If f
 endswith ".gz", then the output will be gzipped.
+If f startswith "tmp:" then a tempfile will be created with a prefix of the string following ":"
+
+
+#### func (*Writer) Name
+
+```go
+func (w *Writer) Name() string
+```
+The path to the underlying file handle.
 
 #### func (*Writer) Close
 
