@@ -72,6 +72,7 @@ func (s *XopenTest) TestWopen(c *C) {
 		c.Assert(err, Equals, io.EOF)
 		str, err = rdr.ReadString(99)
 		c.Assert(str, Equals, "")
+		c.Assert(err, Equals, io.EOF)
 
 		rdr.Close()
 		os.Remove(f)

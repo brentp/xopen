@@ -38,7 +38,7 @@ func IsStdin() bool {
 	return (stat.Mode() & os.ModeCharDevice) == 0
 }
 
-// ExpandUser expands ~/path and ~otheruser/path appropriately
+// ExpandUser expands ~/path and ~otheruser/path appropriately.
 func ExpandUser(path string) (string, error) {
 	if path[0] != '~' {
 		return path, nil
@@ -134,7 +134,7 @@ func (w *Writer) Flush() {
 
 var pageSize = os.Getpagesize() * 2
 
-// Buf returns a buffered reader from an io.Reader
+// Buf returns a buffered reader from an io.Reader.
 // If f == "-", then it will attempt to read from os.Stdin.
 // If the file is gzipped, it will be read as such.
 func Buf(r io.Reader) *Reader {
@@ -143,7 +143,6 @@ func Buf(r io.Reader) *Reader {
 	if is, err := IsGzip(b); err != nil && err != io.EOF {
 		log.Fatal(err)
 	} else if is {
-		//rdr, err = newFastGzReader(b)
 		rdr, err = gzip.NewReader(b)
 		if err != nil {
 			log.Fatal(err)
@@ -178,6 +177,9 @@ func XReader(f string) (io.Reader, error) {
 func Ropen(f string) (*Reader, error) {
 	var err error
 	var rdr io.Reader
+	if f == "" {
+		return nil, errors.New("sent empty file-name to xopen.Ropen")
+	}
 	if f == "-" {
 		if !IsStdin() {
 			return nil, errors.New("warning: stdin not detected")
@@ -214,7 +216,7 @@ func Ropen(f string) (*Reader, error) {
 // Wopen opens a buffered reader.
 // If f == "-", then stdout will be used.
 // If f endswith ".gz", then the output will be gzipped.
-// If f startswith "tmp:" then a tmpfile will be created with the prefix being the value after tmp:
+// If f startswith "tmp:" then a tmpfile will be created with the prefix being the value after tmp:. e.g. tmp:fx.gz will create a gzip writer for /tmp/fx${random}.gz
 func Wopen(f string) (*Writer, error) {
 	var wtr *os.File
 	var err error
