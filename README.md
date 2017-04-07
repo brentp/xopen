@@ -1,4 +1,4 @@
-[![GoDoc] (https://godoc.org/github.com/brentp/xopen?status.png)](https://godoc.org/github.com/brentp/xopen)
+[![GoDoc](https://godoc.org/github.com/brentp/xopen?status.png)](https://godoc.org/github.com/brentp/xopen)
 [![Build Status](https://travis-ci.org/brentp/xopen.svg)](https://travis-ci.org/brentp/xopen)
 [![Coverage Status](https://coveralls.io/repos/brentp/xopen/badge.svg?branch=master)](https://coveralls.io/r/brentp/xopen?branch=master)
 
