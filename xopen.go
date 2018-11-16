@@ -40,7 +40,7 @@ func IsStdin() bool {
 
 // ExpandUser expands ~/path and ~otheruser/path appropriately.
 func ExpandUser(path string) (string, error) {
-	if path[0] != '~' {
+	if len(path) == 0 || path[0] != '~' {
 		return path, nil
 	}
 	var u *user.User
