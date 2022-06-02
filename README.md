@@ -108,7 +108,7 @@ Writer is returned by Wopen
 ```go
 func Wopen(f string) (*Writer, error)
 ```
-Wopen opens a buffered reader. If f == "-", then stdout will be used. If f
+Wopen opens a buffered writer. If f == "-", then stdout will be used. If f
 endswith ".gz", then the output will be gzipped.
 If f startswith "tmp:" then a tempfile will be created with a prefix of the string following ":"
 
